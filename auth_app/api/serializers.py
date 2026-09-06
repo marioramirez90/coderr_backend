@@ -3,8 +3,9 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from auth_app.models import UserProfile
 
-
+"""Registrierung"""
 class RegistrationSerializer(serializers.ModelSerializer):
+
     repeated_password = serializers.CharField(write_only=True)
     type = serializers.ChoiceField(choices=UserProfile.TYPE_CHOICES, write_only=True)
 
@@ -14,11 +15,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate(self, attrs):
+        """üÜbereinstimung passwort."""
         if attrs.get("password") != attrs.get("repeated_password"):
             raise serializers.ValidationError({"password": "Passwords do not match."})
         return attrs
 
     def create(self, validated_data):
+        """Erstellt user"""
         account_type = validated_data.pop("type")
         validated_data.pop("repeated_password")
         user = User.objects.create_user(**validated_data)
@@ -27,10 +30,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
+    """loginkontrolle"""
+
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
+        """prüft user  """
         user = authenticate(
             username=attrs.get("username"),
             password=attrs.get("password")
@@ -40,7 +46,10 @@ class LoginSerializer(serializers.Serializer):
         attrs["user"] = user
         return attrs
 
+
 class UserProfileSerializer(serializers.ModelSerializer):
+    """UserProfile in API-Daten"""
+
     username = serializers.CharField(source="user.username", read_only=True)
     first_name = serializers.CharField(source="user.first_name", required=False, allow_blank=True, default="")
     last_name = serializers.CharField(source="user.last_name", required=False, allow_blank=True, default="")
@@ -65,7 +74,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ["user", "type", "created_at"]
 
     def to_representation(self, instance):
-       
+        """JSON-Daten leere Felder.  """
         data = super().to_representation(instance)
         text_fields = ["first_name", "last_name", "location", "tel", "description", "working_hours"]
         for field in text_fields:
@@ -74,7 +83,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
-   
+        """Aktualisierung user"""
         user_data = validated_data.pop("user", {})
         user = instance.user
         for attr, value in user_data.items():
