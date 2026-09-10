@@ -7,7 +7,7 @@ from .serializers import RegistrationSerializer, LoginSerializer,UserProfileSeri
 
 #endpiont........
 class RegistrationView(generics.GenericAPIView):
-    """Registrierung neu benutzer"""
+    """Registrierung /api/registration/"""
     serializer_class = RegistrationSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -29,7 +29,7 @@ class RegistrationView(generics.GenericAPIView):
 
 
 class LoginView(generics.GenericAPIView):
-    """Login alten benutzer."""
+    """Login /api/login/"""
     serializer_class = LoginSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -49,6 +49,7 @@ class LoginView(generics.GenericAPIView):
         )
     
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
+    """GET /api/profile/{pk}/ und PATCH /api/profile/{pk}/."""
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
@@ -57,12 +58,14 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
 
 
 class BusinessProfileListView(generics.ListAPIView):
+    """GET /api/profiles/business/."""
     queryset = UserProfile.objects.filter(type="business")
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class CustomerProfileListView(generics.ListAPIView):
+    """GET /api/profiles/customer/."""
     queryset = UserProfile.objects.filter(type="customer")
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]

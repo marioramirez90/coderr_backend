@@ -2,10 +2,11 @@ from rest_framework import permissions
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
-    """lesenden Zugriff....aber nur Besitzer dürfen verändern."""
+    """GET /api/profile/{pk}/ und PATCH /api/profile/{pk}/."""
 
     def has_object_permission(self, request, view, obj):
-        """Prüft Benutzer"""
+        """lese anfrage get ,head, options"""
         if request.method in permissions.SAFE_METHODS:
             return True
         return obj.user == request.user
+        """patch put anfrage """
