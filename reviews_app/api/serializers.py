@@ -22,9 +22,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         business_user = attrs.get("business_user")
 
-        # Verhindert, dass man sich selbst bewertet
+        # Prevent self-review
         if request and request.user == business_user:
-            raise serializers.ValidationError("Du kannst dich nicht selbst bewerten.")
+            raise serializers.ValidationError("You cannot review yourself.")
 
         return attrs
 

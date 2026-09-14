@@ -1,14 +1,17 @@
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions, filters
+from rest_framework import filters, generics, permissions
+from rest_framework.exceptions import PermissionDenied
 
 from reviews_app.models import Review
-from .permissions import IsReviewerOrReadOnly
+from .permissions import IsCustomerUser, IsReviewerOrReadOnly
 from .serializers import ReviewSerializer
 
 
 class ReviewFilter(django_filters.FilterSet):
-    business_user_id = django_filters.NumberFilter(field_name="business_user__id")
+    business_user_id = django_filters.NumberFilter(
+        field_name="business_user__id"
+    )
     reviewer_id = django_filters.NumberFilter(field_name="reviewer__id")
 
     class Meta:
@@ -17,6 +20,8 @@ class ReviewFilter(django_filters.FilterSet):
 
 
 class ReviewListCreateView(generics.ListCreateAPIView):
+    """GET /api/reviews/ & POST /api/reviews/."""
+
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -25,11 +30,23 @@ class ReviewListCreateView(generics.ListCreateAPIView):
 
     def get_permissions(self):
         if self.request.method == "POST":
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
+            return [permissions.IsAuthenticated(), IsCustomerUser()]
+        return [permissions.IsAuthenticated()]
+
+    def perform_create(self, serializer):
+        business_user = serializer.validated_data["business_user"]
+        if Review.objects.filter(
+            reviewer=self.request.user, business_user=business_user
+        ).exists():
+            raise PermissionDenied(
+                "A user can only submit one review per business profile."
+            )
+        serializer.save(reviewer=self.request.user)
 
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """GET, PATCH, DELETE /api/reviews/{id}/."""
+
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated, IsReviewerOrReadOnly]

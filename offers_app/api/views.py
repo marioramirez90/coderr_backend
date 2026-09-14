@@ -7,16 +7,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from offers_app.models import Offer, OfferDetail
+from auth_app.models import UserProfile
+from reviews_app.models import Review
 from .permissions import IsBusinessUser, IsOwnerOrReadOnly
 from .serializers import (
     OfferCreateUpdateSerializer,
     OfferDetailSerializer,
     OfferListDetailSerializer,
 )
-
-# Wichtig: Importiere Review aus deiner Review-App
-# (Falls dein Ordner 'reviews' statt 'reviews_app' heißt, passe den Namen an)
-from reviews_app.models import Review
 
 
 # 1. Paginierung (10 Einträge pro Seite)
@@ -106,11 +104,15 @@ class BaseInfoView(APIView):
             if avg_rating_result is not None
             else 0.0
         )
+        business_profile_count = UserProfile.objects.filter(
+            type="business"
+        ).count()
         offer_count = Offer.objects.count()
 
         data = {
             "review_count": review_count,
             "average_rating": average_rating,
+            "business_profile_count": business_profile_count,
             "offer_count": offer_count,
         }
 

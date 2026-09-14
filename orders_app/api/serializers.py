@@ -1,5 +1,6 @@
 from offers_app.models import OfferDetail
 from rest_framework import serializers
+from rest_framework.exceptions import NotFound
 
 from orders_app.models import Order
 
@@ -45,7 +46,7 @@ class OrderCreateSerializer(serializers.Serializer):
                 id=value
             )
         except OfferDetail.DoesNotExist:
-            raise serializers.ValidationError("Angebotsdetail nicht gefunden.")
+            raise NotFound("Offer detail not found.")
         return detail
 
     def create(self, validated_data):
