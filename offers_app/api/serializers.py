@@ -76,7 +76,7 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
     def validate_details(self, value):
         if self.instance is None and len(value) != 3:
             raise serializers.ValidationError(
-                "Ein Angebot muss genau 3 Details enthalten."
+                "An offer must contain exactly 3 details."
             )
         return value
 
