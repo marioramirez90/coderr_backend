@@ -54,7 +54,7 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     """GET /api/profile/{pk}/ und PATCH /api/profile/{pk}/."""
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     lookup_field = "user__pk"
     lookup_url_kwarg = "pk"
 
