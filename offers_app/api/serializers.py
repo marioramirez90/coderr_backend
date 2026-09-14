@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Offer, OfferDetail
+from offers_app.models import Offer, OfferDetail
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):

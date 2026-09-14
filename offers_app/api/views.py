@@ -6,7 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Offer, OfferDetail
+from offers_app.models import Offer, OfferDetail
 from .permissions import IsBusinessUser, IsOwnerOrReadOnly
 from .serializers import (
     OfferCreateUpdateSerializer,

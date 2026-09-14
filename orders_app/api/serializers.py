@@ -1,7 +1,7 @@
-from offers.models import OfferDetail  
+from offers_app.models import OfferDetail
 from rest_framework import serializers
 
-from .models import Order
+from orders_app.models import Order
 
 
 class OrderSerializer(serializers.ModelSerializer):

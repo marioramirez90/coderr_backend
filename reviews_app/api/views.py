@@ -2,7 +2,7 @@ import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, filters
 
-from .models import Review
+from reviews_app.models import Review
 from .permissions import IsReviewerOrReadOnly
 from .serializers import ReviewSerializer
 
