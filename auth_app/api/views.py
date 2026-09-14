@@ -9,6 +9,7 @@ from .serializers import RegistrationSerializer, LoginSerializer,UserProfileSeri
 class RegistrationView(generics.GenericAPIView):
     """Registrierung /api/registration/"""
     serializer_class = RegistrationSerializer
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -31,6 +32,7 @@ class RegistrationView(generics.GenericAPIView):
 class LoginView(generics.GenericAPIView):
     """Login /api/login/"""
     serializer_class = LoginSerializer
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -52,7 +54,7 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     """GET /api/profile/{pk}/ und PATCH /api/profile/{pk}/."""
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     lookup_field = "user__pk"
     lookup_url_kwarg = "pk"
 

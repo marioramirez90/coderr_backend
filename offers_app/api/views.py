@@ -93,6 +93,7 @@ class SingleOfferDetailView(generics.RetrieveAPIView):
 
 # 6. GET /api/base-info/
 class BaseInfoView(APIView):
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
