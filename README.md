@@ -20,7 +20,39 @@
 
 ---
 
+## ⚡ Quick Start (TL;DR)
+
+Get the project up and running locally in 5 simple steps:
+
+```bash
+# 1. Clone the repository and navigate into the project
+git clone https://github.com/<your-username>/coderr-backend.git
+cd coderr-backend
+
+# 2. Create and activate a virtual environment
+python -m venv venv
+# On Windows: .\venv\Scripts\activate
+# On macOS/Linux: source venv/bin/activate
+
+# 3. Install required dependencies
+pip install -r requirements.txt
+
+# 4. Configure environment variables (create .env file)
+# Create a .env file containing:
+# SECRET_KEY=your_django_secret_key_here
+# DEBUG=True
+
+# 5. Apply migrations and start development server
+python manage.py migrate
+python manage.py runserver
+```
+
+Server will be running at `http://127.0.0.1:8000/api/` 🎉
+
+---
+
 ## ✨ About the Project
+
 
 **Coderr** is a modular service marketplace backend built with **Django** and **Django REST Framework (DRF)**.
 
