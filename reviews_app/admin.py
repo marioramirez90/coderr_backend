@@ -1,3 +1,9 @@
+"""
+Django admin configuration for the reviews app.
+
+Registers the Review model and options.
+"""
+
 from django.contrib import admin
 from .models import Review
 

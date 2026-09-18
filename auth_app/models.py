@@ -1,3 +1,9 @@
+"""
+Database models for the authentication app.
+
+Defines the UserProfile model associated with Django's standard User model.
+"""
+
 from django.db import models
 from django.contrib.auth.models import User
 

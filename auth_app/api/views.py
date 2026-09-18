@@ -1,19 +1,27 @@
+"""
+API views for the authentication app.
+
+Provides API endpoints for user registration, login authentication,
+user profile retrieval/updating, and business/customer profile listings.
+"""
+
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from auth_app.models import UserProfile
 from .permissions import IsOwnerOrReadOnly
-from .serializers import RegistrationSerializer, LoginSerializer,UserProfileSerializer
+from .serializers import RegistrationSerializer, LoginSerializer, UserProfileSerializer
 
-#endpiont........
+
 class RegistrationView(generics.GenericAPIView):
-    """Registrierung /api/registration/"""
+    """User registration endpoint at POST /api/registration/."""
+
     serializer_class = RegistrationSerializer
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
-        """legt Benutzer + Token"""
+        """Create new user account and return auth token."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -30,12 +38,14 @@ class RegistrationView(generics.GenericAPIView):
 
 
 class LoginView(generics.GenericAPIView):
-    """Login /api/login/"""
+    """User login endpoint at POST /api/login/."""
+
     serializer_class = LoginSerializer
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
+        """Authenticate user credentials and return auth token."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
@@ -49,9 +59,11 @@ class LoginView(generics.GenericAPIView):
             },
             status=status.HTTP_200_OK,
         )
-    
+
+
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
-    """GET /api/profile/{pk}/ und PATCH /api/profile/{pk}/."""
+    """Retrieve or update user profile at GET /api/profile/{pk}/ and PATCH /api/profile/{pk}/."""
+
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
@@ -60,14 +72,16 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
 
 
 class BusinessProfileListView(generics.ListAPIView):
-    """GET /api/profiles/business/."""
+    """List business user profiles at GET /api/profiles/business/."""
+
     queryset = UserProfile.objects.filter(type="business")
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class CustomerProfileListView(generics.ListAPIView):
-    """GET /api/profiles/customer/."""
+    """List customer profiles at GET /api/profiles/customer/."""
+
     queryset = UserProfile.objects.filter(type="customer")
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]

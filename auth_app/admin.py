@@ -1,3 +1,9 @@
+"""
+Django admin configuration for the authentication app.
+
+Registers the custom UserProfile inline and model admin options.
+"""
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User

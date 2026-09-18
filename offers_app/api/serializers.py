@@ -1,7 +1,14 @@
+"""
+Serializers for the offers REST API endpoints.
+
+Handles serialization, nested serialization, and validation for offers and offer details.
+"""
+
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from offers_app.models import Offer, OfferDetail
+
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):

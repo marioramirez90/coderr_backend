@@ -1,3 +1,10 @@
+"""
+API views for the offers app.
+
+Provides endpoints for listing, creating, retrieving, updating, and deleting offers,
+retrieving single offer details, and fetching platform base information stats.
+"""
+
 import django_filters
 from django.db.models import Avg, Min
 from django_filters.rest_framework import DjangoFilterBackend
@@ -17,15 +24,17 @@ from .serializers import (
 )
 
 
-# 1. Paginierung (10 Einträge pro Seite)
 class StandardOfferPagination(PageNumberPagination):
+    """Standard pagination for offers (10 items per page)."""
+
     page_size = 10
     page_size_query_param = "page_size"
     max_page_size = 100
 
 
-# 2. Filter für die Angebotsliste
 class OfferFilter(django_filters.FilterSet):
+    """Filter set for offer listing by creator_id, min_price, and max_delivery_time."""
+
     creator_id = django_filters.NumberFilter(field_name="user__id")
     min_price = django_filters.NumberFilter(
         field_name="details__price", lookup_expr="gte", distinct=True
@@ -41,8 +50,9 @@ class OfferFilter(django_filters.FilterSet):
         fields = ["creator_id", "min_price", "max_delivery_time"]
 
 
-# 3. GET /api/offers/ & POST /api/offers/
 class OfferListCreateView(generics.ListCreateAPIView):
+    """GET /api/offers/ & POST /api/offers/."""
+
     pagination_class = StandardOfferPagination
     filter_backends = [
         DjangoFilterBackend,
@@ -71,8 +81,9 @@ class OfferListCreateView(generics.ListCreateAPIView):
         return [permissions.AllowAny()]
 
 
-# 4. GET /api/offers/{id}/, PATCH /api/offers/{id}/, DELETE /api/offers/{id}/
 class OfferDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """GET /api/offers/{id}/, PATCH /api/offers/{id}/, DELETE /api/offers/{id}/."""
+
     queryset = Offer.objects.all().prefetch_related("details")
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
@@ -82,15 +93,17 @@ class OfferDetailView(generics.RetrieveUpdateDestroyAPIView):
         return OfferListDetailSerializer
 
 
-# 5. GET /api/offerdetails/{id}/
 class SingleOfferDetailView(generics.RetrieveAPIView):
+    """GET /api/offerdetails/{id}/."""
+
     queryset = OfferDetail.objects.all()
     serializer_class = OfferDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-# 6. GET /api/base-info/
 class BaseInfoView(APIView):
+    """GET /api/base-info/ - Overall platform statistics summary."""
+
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
@@ -116,4 +129,4 @@ class BaseInfoView(APIView):
             "offer_count": offer_count,
         }
 
-        return Response(data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)

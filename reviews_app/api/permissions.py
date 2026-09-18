@@ -1,8 +1,14 @@
+"""
+Custom permissions for the reviews REST API endpoints.
+"""
+
 from rest_framework import permissions
 
 
 class IsCustomerUser(permissions.BasePermission):
-    """Nur authentifizierte Benutzer mit Kundenprofil dürfen bewerten."""
+    """
+    Only authenticated users with a customer profile are allowed to create reviews.
+    """
 
     def has_permission(self, request, view):
         return bool(
@@ -14,7 +20,9 @@ class IsCustomerUser(permissions.BasePermission):
 
 
 class IsReviewerOrReadOnly(permissions.BasePermission):
-    """Erlaubt Ändern oder Löschen nur dem Verfasser der Bewertung."""
+    """
+    Allows modification or deletion only to the author of the review.
+    """
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:

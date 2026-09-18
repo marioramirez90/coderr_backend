@@ -1,3 +1,9 @@
+"""
+API views for the reviews app.
+
+Provides endpoints for listing, creating, retrieving, updating, and deleting business reviews.
+"""
+
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, permissions
@@ -6,6 +12,7 @@ from rest_framework.exceptions import PermissionDenied
 from reviews_app.models import Review
 from .permissions import IsCustomerUser, IsReviewerOrReadOnly
 from .serializers import ReviewSerializer
+
 
 
 class ReviewFilter(django_filters.FilterSet):

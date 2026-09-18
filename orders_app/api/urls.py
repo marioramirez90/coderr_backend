@@ -1,3 +1,7 @@
+"""
+URL routing configuration for the orders REST API endpoints.
+"""
+
 from django.urls import path
 from .views import (
     OrderListCreateView,

@@ -1,3 +1,9 @@
+"""
+Database models for the orders app.
+
+Defines the Order model tracking service transactions between customers and business users.
+"""
+
 from django.contrib.auth.models import User
 from django.db import models
 

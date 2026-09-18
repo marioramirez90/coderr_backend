@@ -1,3 +1,9 @@
+"""
+Database models for the reviews app.
+
+Defines the Review model representing customer feedback and ratings for business users.
+"""
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator

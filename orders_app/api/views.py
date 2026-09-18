@@ -1,3 +1,10 @@
+"""
+API views for the orders app.
+
+Provides endpoints for listing/creating orders, retrieving/updating/deleting order details,
+and counting active or completed orders for a business profile.
+"""
+
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -61,7 +68,7 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class OrderCountView(APIView):
-    """GET /api/order-count/{business_user_id}/ - Laufende Bestellungen."""
+    """GET /api/order-count/{business_user_id}/ - Ongoing in-progress orders count."""
 
     permission_classes = [permissions.IsAuthenticated]
 
@@ -74,7 +81,7 @@ class OrderCountView(APIView):
 
 
 class CompletedOrderCountView(APIView):
-    """GET /api/completed-order-count/{business_user_id}/ - Abgeschlossene."""
+    """GET /api/completed-order-count/{business_user_id}/ - Completed orders count."""
 
     permission_classes = [permissions.IsAuthenticated]
 

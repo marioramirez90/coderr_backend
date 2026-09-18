@@ -1,3 +1,9 @@
+"""
+Django admin configuration for the orders app.
+
+Registers the Order model and options.
+"""
+
 from django.contrib import admin
 
 from .models import Order

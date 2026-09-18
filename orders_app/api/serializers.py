@@ -1,8 +1,15 @@
+"""
+Serializers for the orders REST API endpoints.
+
+Handles serialization and creation logic for customer orders and order status updates.
+"""
+
 from offers_app.models import OfferDetail
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 
 from orders_app.models import Order
+
 
 
 class OrderSerializer(serializers.ModelSerializer):

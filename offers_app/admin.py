@@ -1,9 +1,12 @@
-from django.contrib import admin
+"""
+Django admin configuration for the offers app.
 
-# Register your models here.
-from django.contrib import admin
+Registers Offer and OfferDetail models and inline admin components.
+"""
 
+from django.contrib import admin
 from .models import Offer, OfferDetail
+
 
 
 class OfferDetailInline(admin.TabularInline):

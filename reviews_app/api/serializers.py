@@ -1,5 +1,12 @@
+"""
+Serializers for the reviews REST API endpoints.
+
+Handles serialization and validation for reviews, including self-review prevention.
+"""
+
 from rest_framework import serializers
 from reviews_app.models import Review
+
 
 
 class ReviewSerializer(serializers.ModelSerializer):

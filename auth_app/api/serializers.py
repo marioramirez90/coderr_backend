@@ -1,28 +1,34 @@
+"""
+Serializers for the authentication REST API endpoints.
+
+Handles user registration, login authentication, and user profile management.
+"""
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from auth_app.models import UserProfile
 
-"""Registrierung /api/registration/"""
+
 class RegistrationSerializer(serializers.ModelSerializer):
+    """Serializer for user registration at /api/registration/."""
 
     repeated_password = serializers.CharField(write_only=True)
     type = serializers.ChoiceField(choices=UserProfile.TYPE_CHOICES, write_only=True)
 
     class Meta:
-        '''user model +felder'''
         model = User
         fields = ["username", "email", "password", "repeated_password", "type"]
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate(self, attrs):
-        """üÜbereinstimung passwort."""
+        """Validate password matching."""
         if attrs.get("password") != attrs.get("repeated_password"):
             raise serializers.ValidationError({"password": "Passwords do not match."})
         return attrs
 
     def create(self, validated_data):
-        """Erstellt user"""
+        """Create a new User and associated UserProfile."""
         account_type = validated_data.pop("type")
         validated_data.pop("repeated_password")
         user = User.objects.create_user(**validated_data)
@@ -31,13 +37,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    """loginkontrolle /api/login/"""
+    """Serializer for user login at /api/login/."""
 
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        """prüft user +pasw  """
+        """Validate user credentials and authenticate."""
         user = authenticate(
             username=attrs.get("username"),
             password=attrs.get("password")
@@ -49,7 +55,7 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    """UserProfile /api/profile/"""
+    """Serializer for UserProfile management at /api/profile/."""
 
     username = serializers.CharField(source="user.username", read_only=True)
     first_name = serializers.CharField(source="user.first_name", required=False, allow_blank=True, default="")
@@ -57,7 +63,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source="user.email", required=False, allow_blank=True, default="")
 
     class Meta:
-        '''UserProfile felder'''
         model = UserProfile
         fields = [
             "user",
@@ -76,7 +81,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ["user", "type", "created_at"]
 
     def to_representation(self, instance):
-        '''null'''
+        """Ensure None values in text fields are converted to empty strings."""
         data = super().to_representation(instance)
         text_fields = ["first_name", "last_name", "location", "tel", "description", "working_hours"]
         for field in text_fields:
@@ -85,10 +90,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
-        '''aktualisiertung'''
+        """Update UserProfile instance and associated User fields."""
         user_data = validated_data.pop("user", {})
         user = instance.user
         for attr, value in user_data.items():
             setattr(user, attr, value)
         user.save()
-        return super().update(instance, validated_data)
+        return super().update(instance, validated_data)

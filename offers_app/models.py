@@ -1,3 +1,9 @@
+"""
+Database models for the offers app.
+
+Defines Offer and OfferDetail models representing business services/packages.
+"""
+
 from django.contrib.auth.models import User
 from django.db import models
 
