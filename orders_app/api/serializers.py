@@ -57,21 +57,19 @@ class OrderCreateSerializer(serializers.Serializer):
         return detail
 
     def create(self, validated_data):
-        detail = validated_data["offer_detail_id"]
-        customer = self.context["request"].user
-        business = detail.offer.user
-
+        d = validated_data["offer_detail_id"]
         return Order.objects.create(
-            customer_user=customer,
-            business_user=business,
-            title=detail.title,
-            revisions=detail.revisions,
-            delivery_time_in_days=detail.delivery_time_in_days,
-            price=detail.price,
-            features=detail.features,
-            offer_type=detail.offer_type,
+            customer_user=self.context["request"].user,
+            business_user=d.offer.user,
+            title=d.title,
+            revisions=d.revisions,
+            delivery_time_in_days=d.delivery_time_in_days,
+            price=d.price,
+            features=d.features,
+            offer_type=d.offer_type,
             status="in_progress",
         )
+
 
 
 class OrderUpdateStatusSerializer(serializers.ModelSerializer):

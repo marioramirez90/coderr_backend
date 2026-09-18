@@ -42,6 +42,12 @@ class OrderListCreateView(generics.ListCreateAPIView):
             return OrderCreateSerializer
         return OrderSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
+        return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     """GET, PATCH, DELETE /api/orders/{id}/."""
@@ -62,9 +68,12 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return Order.objects.all()
         return Order.objects.filter(
             Q(customer_user=user) | Q(business_user=user)
         )
+
 
 
 class OrderCountView(APIView):

@@ -101,6 +101,17 @@ class SingleOfferDetailView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
+def _get_base_info_data():
+    """Calculate platform statistics for base-info endpoint."""
+    avg = Review.objects.aggregate(Avg("rating"))["rating__avg"]
+    return {
+        "review_count": Review.objects.count(),
+        "average_rating": round(avg, 1) if avg is not None else 0.0,
+        "business_profile_count": UserProfile.objects.filter(type="business").count(),
+        "offer_count": Offer.objects.count(),
+    }
+
+
 class BaseInfoView(APIView):
     """GET /api/base-info/ - Overall platform statistics summary."""
 
@@ -108,25 +119,5 @@ class BaseInfoView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        review_count = Review.objects.count()
-        avg_rating_result = Review.objects.aggregate(Avg("rating"))[
-            "rating__avg"
-        ]
-        average_rating = (
-            round(avg_rating_result, 1)
-            if avg_rating_result is not None
-            else 0.0
-        )
-        business_profile_count = UserProfile.objects.filter(
-            type="business"
-        ).count()
-        offer_count = Offer.objects.count()
-
-        data = {
-            "review_count": review_count,
-            "average_rating": average_rating,
-            "business_profile_count": business_profile_count,
-            "offer_count": offer_count,
-        }
-
-        return Response(data, status=status.HTTP_200_OK)
+        return Response(_get_base_info_data(), status=status.HTTP_200_OK)
+

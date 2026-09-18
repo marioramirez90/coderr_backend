@@ -13,6 +13,18 @@ from .permissions import IsOwnerOrReadOnly
 from .serializers import RegistrationSerializer, LoginSerializer, UserProfileSerializer
 
 
+def _token_response(user, status_code):
+    """Helper method to format token authentication response."""
+    token, _ = Token.objects.get_or_create(user=user)
+    payload = {
+        "token": token.key,
+        "username": user.username,
+        "email": user.email,
+        "user_id": user.pk,
+    }
+    return Response(payload, status=status_code)
+
+
 class RegistrationView(generics.GenericAPIView):
     """User registration endpoint at POST /api/registration/."""
 
@@ -25,16 +37,7 @@ class RegistrationView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response(
-            {
-                "token": token.key,
-                "username": user.username,
-                "email": user.email,
-                "user_id": user.pk,
-            },
-            status=status.HTTP_201_CREATED,
-        )
+        return _token_response(user, status.HTTP_201_CREATED)
 
 
 class LoginView(generics.GenericAPIView):
@@ -49,16 +52,8 @@ class LoginView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response(
-            {
-                "token": token.key,
-                "username": user.username,
-                "email": user.email,
-                "user_id": user.pk,
-            },
-            status=status.HTTP_200_OK,
-        )
+        return _token_response(user, status.HTTP_200_OK)
+
 
 
 class ProfileDetailView(generics.RetrieveUpdateAPIView):

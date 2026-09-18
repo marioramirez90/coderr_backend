@@ -73,6 +73,19 @@ class OfferListDetailSerializer(serializers.ModelSerializer):
         return min(times) if times else 0
 
 
+def _update_offer_details(instance, details_data):
+    """Helper function to update associated OfferDetail instances."""
+    if not details_data:
+        return
+    for detail_data in details_data:
+        offer_type = detail_data.get("offer_type")
+        detail_obj = instance.details.filter(offer_type=offer_type).first()
+        if detail_obj:
+            for key, val in detail_data.items():
+                setattr(detail_obj, key, val)
+            detail_obj.save()
+
+
 class OfferCreateUpdateSerializer(serializers.ModelSerializer):
     details = OfferDetailSerializer(many=True)
 
@@ -97,23 +110,11 @@ class OfferCreateUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         details_data = validated_data.pop("details", None)
-
         instance.title = validated_data.get("title", instance.title)
         instance.image = validated_data.get("image", instance.image)
         instance.description = validated_data.get(
             "description", instance.description
         )
         instance.save()
-
-        if details_data:
-            for detail_data in details_data:
-                offer_type = detail_data.get("offer_type")
-                detail_obj = instance.details.filter(
-                    offer_type=offer_type
-                ).first()
-                if detail_obj:
-                    for key, val in detail_data.items():
-                        setattr(detail_obj, key, val)
-                    detail_obj.save()
-
-        return instance
+        _update_offer_details(instance, details_data)
+        return instance
