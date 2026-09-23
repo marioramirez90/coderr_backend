@@ -36,7 +36,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     def get_permissions(self):
         if self.request.method == "POST":
             return [permissions.IsAuthenticated(), IsCustomerUser()]
-        return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
 
     def perform_create(self, serializer):
         business_user = serializer.validated_data["business_user"]
@@ -54,8 +54,4 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-
-    def get_permissions(self):
-        if self.request.method in permissions.SAFE_METHODS:
-            return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated(), IsReviewerOrReadOnly()]
+    permission_classes = [permissions.IsAuthenticated, IsReviewerOrReadOnly]

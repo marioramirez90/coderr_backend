@@ -473,7 +473,7 @@ cancelled
 
 | Method   | Endpoint             | Description         | Authentication |
 | -------- | -------------------- | ------------------- | -------------- |
-| `GET`    | `/api/reviews/`      | List reviews        | ❌              |
+| `GET`    | `/api/reviews/`      | List reviews        | 🔐 Authenticated |
 | `POST`   | `/api/reviews/`      | Create a review     | 🔐 Customer    |
 | `PATCH`  | `/api/reviews/<id>/` | Update own review   | 🔐 Owner       |
 | `DELETE` | `/api/reviews/<id>/` | Delete own review   | 🔐 Owner       |
