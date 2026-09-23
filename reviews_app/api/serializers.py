@@ -30,8 +30,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         business_user = attrs.get("business_user")
 
         # Prevent self-review (returns 403 Forbidden)
-        if request and request.user == business_user:
+        if request and request.user.is_authenticated and request.user == business_user:
             raise PermissionDenied("You cannot review yourself.")
+
+        # Prevent duplicate reviews per business profile (returns 400 Bad Request with object format)
+        if request and request.user.is_authenticated and business_user:
+            if self.instance is None and Review.objects.filter(
+                reviewer=request.user, business_user=business_user
+            ).exists():
+                raise serializers.ValidationError(
+                    {"detail": "A user can only submit one review per business profile."}
+                )
 
         return attrs
 

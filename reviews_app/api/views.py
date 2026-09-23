@@ -44,7 +44,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
             reviewer=self.request.user, business_user=business_user
         ).exists():
             raise serializers.ValidationError(
-                "A user can only submit one review per business profile."
+                {"detail": "A user can only submit one review per business profile."}
             )
         serializer.save(reviewer=self.request.user)
 
@@ -54,4 +54,8 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAuthenticated, IsReviewerOrReadOnly]
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated(), IsReviewerOrReadOnly()]

@@ -19,5 +19,10 @@ def custom_exception_handler(exc, context):
                 response.data = {"detail": response.data[0]}
             else:
                 response.data = {"detail": response.data}
+        elif isinstance(response.data, dict):
+            if "detail" in response.data and isinstance(response.data["detail"], list) and len(response.data["detail"]) == 1:
+                response.data["detail"] = response.data["detail"][0]
+        else:
+            response.data = {"detail": str(response.data)}
 
     return response
