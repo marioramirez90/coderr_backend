@@ -5,12 +5,17 @@ Provides API endpoints for user registration, login authentication,
 user profile retrieval/updating, and business/customer profile listings.
 """
 
-from rest_framework import generics, status, permissions
-from rest_framework.response import Response
+from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+
 from auth_app.models import UserProfile
 from .permissions import IsOwnerOrReadOnly
-from .serializers import RegistrationSerializer, LoginSerializer, UserProfileSerializer
+from .serializers import (
+    LoginSerializer,
+    RegistrationSerializer,
+    UserProfileSerializer,
+)
 
 
 def _token_response(user, status_code):

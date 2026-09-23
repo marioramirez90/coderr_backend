@@ -6,8 +6,7 @@ Provides endpoints for listing, creating, retrieving, updating, and deleting bus
 
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, generics, permissions
-from rest_framework.exceptions import PermissionDenied
+from rest_framework import filters, generics, permissions, serializers
 
 from reviews_app.models import Review
 from .permissions import IsCustomerUser, IsReviewerOrReadOnly

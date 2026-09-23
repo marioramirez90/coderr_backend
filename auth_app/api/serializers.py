@@ -7,6 +7,7 @@ Handles user registration, login authentication, and user profile management.
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import serializers
+
 from auth_app.models import UserProfile
 
 
