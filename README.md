@@ -31,16 +31,14 @@ cd coderr-backend
 
 # 2. Create and activate a virtual environment
 python -m venv venv
-# On Windows: .\venv\Scripts\activate
-# On macOS/Linux: source venv/bin/activate
+.\venv\Scripts\activate      # Windows
+source venv/bin/activate     # macOS / Linux
 
 # 3. Install required dependencies
 pip install -r requirements.txt
 
-# 4. Configure environment variables (create .env file)
-# Create a .env file containing:
-# SECRET_KEY=your_django_secret_key_here
-# DEBUG=True
+# 4. Configure environment variables
+cp .env.template .env        # Windows: copy .env.template .env
 
 # 5. Apply migrations and start development server
 python manage.py migrate
@@ -308,17 +306,25 @@ pip install -r requirements.txt
 
 ## 4️⃣ Configure Environment Variables
 
-Create a `.env` file in the project root, next to `manage.py`.
+Create a `.env` file in the project root by copying `.env.template`:
+
+```bash
+cp .env.template .env        # macOS / Linux
+copy .env.template .env      # Windows
+```
+
+Or create `.env` manually next to `manage.py`:
 
 ```text
 coderr-backend/
 ├── .env
+├── .env.template
 ├── manage.py
 ├── requirements.txt
 └── ...
 ```
 
-Add:
+Ensure `.env` contains:
 
 ```env
 SECRET_KEY=your_django_secret_key_here
