@@ -13,7 +13,6 @@ from .permissions import IsCustomerUser, IsReviewerOrReadOnly
 from .serializers import ReviewSerializer
 
 
-
 class ReviewFilter(django_filters.FilterSet):
     business_user_id = django_filters.NumberFilter(
         field_name="business_user__id"
@@ -35,7 +34,9 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     ordering_fields = ["updated_at", "rating"]
 
     def get_permissions(self):
-        return [permissions.IsAuthenticated()]
+        if self.request.method == "POST":
+            return [permissions.IsAuthenticated(), IsCustomerUser()]
+        return [permissions.AllowAny()]
 
     def perform_create(self, serializer):
         business_user = serializer.validated_data["business_user"]

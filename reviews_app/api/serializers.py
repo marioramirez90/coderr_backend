@@ -5,8 +5,8 @@ Handles serialization and validation for reviews, including self-review preventi
 """
 
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 from reviews_app.models import Review
-
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -29,9 +29,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         business_user = attrs.get("business_user")
 
-        # Prevent self-review
+        # Prevent self-review (returns 403 Forbidden)
         if request and request.user == business_user:
-            raise serializers.ValidationError("You cannot review yourself.")
+            raise PermissionDenied("You cannot review yourself.")
 
         return attrs
 
