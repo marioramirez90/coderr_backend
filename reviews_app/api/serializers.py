@@ -25,6 +25,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "reviewer", "created_at", "updated_at"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance is not None:
+            self.fields["business_user"].read_only = True
+
     def validate(self, attrs):
         request = self.context.get("request")
         business_user = attrs.get("business_user")
