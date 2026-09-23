@@ -36,8 +36,6 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     ordering_fields = ["updated_at", "rating"]
 
     def get_permissions(self):
-        if self.request.method == "POST":
-            return [permissions.IsAuthenticated(), IsCustomerUser()]
         return [permissions.IsAuthenticated()]
 
     def perform_create(self, serializer):
@@ -45,7 +43,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         if Review.objects.filter(
             reviewer=self.request.user, business_user=business_user
         ).exists():
-            raise PermissionDenied(
+            raise serializers.ValidationError(
                 "A user can only submit one review per business profile."
             )
         serializer.save(reviewer=self.request.user)

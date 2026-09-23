@@ -12,6 +12,16 @@ from offers_app.models import Offer, OfferDetail
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+    title = serializers.CharField(required=False)
+    revisions = serializers.IntegerField(required=False, min_value=0)
+    delivery_time_in_days = serializers.IntegerField(required=False, min_value=1)
+    price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, required=False, min_value=0
+    )
+    features = serializers.JSONField(required=False)
+    offer_type = serializers.CharField(required=False)
+
     class Meta:
         model = OfferDetail
         fields = [
@@ -23,6 +33,23 @@ class OfferDetailSerializer(serializers.ModelSerializer):
             "features",
             "offer_type",
         ]
+
+    def to_internal_value(self, data):
+        allowed_fields = {
+            "id",
+            "title",
+            "revisions",
+            "delivery_time_in_days",
+            "price",
+            "features",
+            "offer_type",
+        }
+        extra_fields = set(data.keys()) - allowed_fields
+        if extra_fields:
+            raise serializers.ValidationError(
+                {field: "This field is not allowed." for field in extra_fields}
+            )
+        return super().to_internal_value(data)
 
 
 class OfferDetailLinkSerializer(serializers.ModelSerializer):
@@ -82,22 +109,48 @@ def _update_offer_details(instance, details_data):
         detail_obj = instance.details.filter(offer_type=offer_type).first()
         if detail_obj:
             for key, val in detail_data.items():
-                setattr(detail_obj, key, val)
+                if key != "id":
+                    setattr(detail_obj, key, val)
             detail_obj.save()
 
 
 class OfferCreateUpdateSerializer(serializers.ModelSerializer):
-    details = OfferDetailSerializer(many=True)
+    details = OfferDetailSerializer(many=True, required=False)
 
     class Meta:
         model = Offer
         fields = ["id", "title", "image", "description", "details"]
+
+    def to_internal_value(self, data):
+        allowed_fields = {"title", "image", "description", "details"}
+        extra_fields = set(data.keys()) - allowed_fields
+        if extra_fields:
+            raise serializers.ValidationError(
+                {field: "This field is not allowed." for field in extra_fields}
+            )
+        return super().to_internal_value(data)
 
     def validate_details(self, value):
         if self.instance is None and len(value) != 3:
             raise serializers.ValidationError(
                 "An offer must contain exactly 3 details."
             )
+        valid_types = {"basic", "standard", "premium"}
+        existing_types = (
+            set(self.instance.details.values_list("offer_type", flat=True))
+            if self.instance
+            else valid_types
+        )
+        for detail in value:
+            offer_type = detail.get("offer_type")
+            if not offer_type or offer_type not in valid_types:
+                raise serializers.ValidationError(
+                    "Each detail must contain a valid offer_type ('basic', 'standard', or 'premium')."
+                )
+            if self.instance and offer_type not in existing_types:
+                raise serializers.ValidationError(
+                    f"Detail offer_type '{offer_type}' does not exist on this offer."
+                )
         return value
 
     def create(self, validated_data):
