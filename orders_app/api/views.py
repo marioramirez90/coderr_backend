@@ -66,13 +66,13 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             return OrderUpdateStatusSerializer
         return OrderSerializer
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_staff or user.is_superuser:
-            return Order.objects.all()
-        return Order.objects.filter(
-            Q(customer_user=user) | Q(business_user=user)
-        )
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(OrderSerializer(instance).data, status=status.HTTP_200_OK)
 
 
 

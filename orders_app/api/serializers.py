@@ -76,3 +76,12 @@ class OrderUpdateStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ["status"]
+
+    def to_internal_value(self, data):
+        allowed_fields = {"status"}
+        extra_fields = set(data.keys()) - allowed_fields
+        if extra_fields:
+            raise serializers.ValidationError(
+                {field: "This field is not allowed." for field in extra_fields}
+            )
+        return super().to_internal_value(data)
